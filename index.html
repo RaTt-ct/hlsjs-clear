@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./js/hls.js/dist/hls.js"></script>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-card">
+        <h1>Тестовое задание CDNvideo</h1>
+        <video id="video" style="width: 100%" controls></video>
+        <div class="video-statistics">
+          <div class="video-statistics-tabs">
+            <div class="video-statistics-tab" onclick="openTab(0)">
+              <p>Position metrics</p>
+            </div>
+
+            <div class="video-statistics-tab" onclick="openTab(1)">
+              <p>Buffer metrics</p>
+            </div>
+
+            <div class="video-statistics-tab" onclick="openTab(2)">
+              <p>Media Info</p>
+            </div>
+          </div>
+
+          <div class="video-statistics-block">
+            <p>Current position: <span id="currentPosition"></span></p>
+            <p>Media duration: <span id="mediaDuration"></span></p>
+          </div>
+
+          <div class="video-statistics-block">
+            <p style="color: #000000">
+              Current Buffer size: <span id="currentBuffer"></span>
+            </p>
+          </div>
+
+          <div class="video-statistics-block">
+            <p style="color: #000000">
+              Fragments amount: <span id="fragmentsAmount"></span>
+            </p>
+            <p style="color: #000000">
+              Current fragment: <span id="currentFragment"></span>
+            </p>
+            <p style="color: #000000">
+              Media url:
+              <span> <a id="videoUrl"></a> </span>
+            </p>
+            <p style="color: #000000">
+              Current bitrate: <span id="currentBitrate"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const openTab = (tab) => {
+        let tabs = document.getElementsByClassName('video-statistics-tab');
+        let tabContent = document.getElementsByClassName(
+          'video-statistics-block'
+        );
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].classList.remove('video-statistics-tab-active');
+          tabContent[i].classList.remove('video-statistics-block-active');
+        }
+        tabs[tab].classList.add('video-statistics-tab-active');
+        tabContent[tab].classList.add('video-statistics-block-active');
+      };
+
+      const fancyTimeFormat = (duration) => {
+        const hrs = ~~(duration / 3600);
+        const mins = ~~((duration % 3600) / 60);
+        const secs = ~~duration % 60;
+        let ret = '';
+        if (hrs > 0) {
+          ret += '' + hrs + ':' + (mins < 10 ? '0' : '');
+        }
+        ret += '' + mins + ':' + (secs < 10 ? '0' : '');
+        ret += '' + secs;
+
+        return ret;
+      };
+
+      const video = document.getElementById('video');
+      const videoSource =
+        ' https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8';
+
+      if (Hls.isSupported()) {
+        const config = {
+          startPosition: 70,
+        };
+
+        const hls = new Hls(config);
+        hls.loadSource(videoSource);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
+          document.getElementById('currentFragment').innerHTML =
+            data.frag.sn + 1;
+        });
+
+        hls.on(Hls.Events.BUFFER_APPENDING, function () {
+          document.getElementById('currentBuffer').innerHTML =
+            hls.mainForwardBufferInfo.end - hls.mainForwardBufferInfo.start;
+        });
+
+        hls.on(Hls.Events.LEVEL_PTS_UPDATED, function (event, data) {
+          if (data.type === 'video') document.getElementById('currentBitrate').innerHTML = data.level.bitrate;
+        });
+
+        hls.on(Hls.Events.LEVEL_LOADED, function (event, data) {
+          document.getElementById('mediaDuration').innerHTML = fancyTimeFormat(
+            data.details.totalduration
+          );
+
+          document.getElementById('fragmentsAmount').innerHTML =
+            data.details.fragments.length;
+
+          document.getElementById('videoUrl').innerHTML = data.details.url;
+          document.getElementById('videoUrl').href = data.details.url;
+        });
+
+        video.addEventListener(
+          'timeupdate',
+          () =>
+            (document.getElementById('currentPosition').innerHTML =
+              fancyTimeFormat(video.currentTime))
+        );
+      }
+    </script>
+  </body>
+</html>

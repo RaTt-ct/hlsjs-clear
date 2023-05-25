@@ -1,0 +1,69 @@
+* {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.main .main-card {
+  padding: 24px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 80%;
+  align-items: center;
+}
+
+.main .main-card h1 {
+  font-size: 24px;
+  color: black;
+}
+
+.video-statistics {
+  color: black;
+  width: 100%;
+}
+
+.video-statistics .video-statistics-tabs {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+}
+.video-statistics .video-statistics-tabs .video-statistics-tab {
+  text-align: center;
+  cursor: pointer;
+  padding: 10px 20px;
+  background: #b7b7b7;
+  width: calc(100% / 3);
+}
+
+.video-statistics .video-statistics-tabs .video-statistics-tab:hover {
+  background: #dadada;
+}
+
+.video-statistics .video-statistics-tabs .video-statistics-tab-active {
+  background: #dbdbdb;
+}
+
+.video-statistics .video-statistics-tabs .video-statistics-block {
+  margin: 20px 0;
+}
+.video-statistics-block span, a {
+  font-weight: 600;
+}
+
+.video-statistics-block {
+  display: none;
+}
+
+.video-statistics-block-active {
+  display: block;
+}
+
+a {
+  color: #000;
+}
